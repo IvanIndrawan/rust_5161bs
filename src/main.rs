@@ -5,6 +5,11 @@
 use rp_pico::entry;
 
 // GPIO traits
+use embedded_hal::digital::v2::OutputPin;
+
+// Ensure we halt the program on panic (if we don't mention this crate it won't
+// be linked)
+use panic_halt as _;
 
 // Pull in any important traits
 use rp_pico::hal::prelude::*;
@@ -85,5 +90,6 @@ unsafe fn main() -> ! {
         }
     }
 }
+
 
 // End of file
