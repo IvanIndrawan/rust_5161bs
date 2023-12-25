@@ -5,11 +5,6 @@
 use rp_pico::entry;
 
 // GPIO traits
-use embedded_hal::digital::v2::OutputPin;
-
-// Ensure we halt the program on panic (if we don't mention this crate it won't
-// be linked)
-use panic_halt as _;
 
 // Pull in any important traits
 use rp_pico::hal::prelude::*;
@@ -21,6 +16,7 @@ use rp_pico::hal::pac;
 // A shorter alias for the Hardware Abstraction Layer, which provides
 // higher-level drivers.
 use rp_pico::hal;
+use testlcd::segment::{Demo, Segment};
 
 /// Entry point to our bare-metal application.
 ///
@@ -30,7 +26,7 @@ use rp_pico::hal;
 /// The function configures the RP2040 peripherals, then blinks the LED in an
 /// infinite loop.
 #[entry]
-fn main() -> ! {
+unsafe fn main() -> ! {
     // Grab our singleton objects
     let mut pac = pac::Peripherals::take().unwrap();
     let core = pac::CorePeripherals::take().unwrap();
@@ -68,58 +64,26 @@ fn main() -> ! {
         &mut pac.RESETS,
     );
 
-    // Set the LED to be an output
-    let mut led_pin = pins.led.into_push_pull_output();
-    let mut pin_gp_15 = pins.gpio15.into_push_pull_output();
+    // Define the GPIO pins connected to the display
+    let x = [
+        pins.gpio1.into_push_pull_output().into_dyn_pin(),
+        pins.gpio2.into_push_pull_output().into_dyn_pin(),
+        pins.gpio3.into_push_pull_output().into_dyn_pin(),
+        pins.gpio4.into_push_pull_output().into_dyn_pin(),
+        pins.gpio5.into_push_pull_output().into_dyn_pin(),
+        pins.gpio6.into_push_pull_output().into_dyn_pin(),
+        pins.gpio7.into_push_pull_output().into_dyn_pin(),
+        pins.gpio8.into_push_pull_output().into_dyn_pin(),
+    ];
+    let mut segment1 = Segment::new(x, delay);
 
-    // let mut pin_gp_a = pins.gpio1.into_push_pull_output();
-    // let mut pin_gp_b = pins.gpio2.into_push_pull_output();
-    // let mut pin_gp_c = pins.gpio3.into_push_pull_output();
-    // let mut pin_gp_d = pins.gpio4.into_push_pull_output();
-    // let mut pin_gp_e = pins.gpio5.into_push_pull_output();
-    // let mut pin_gp_f = pins.gpio6.into_push_pull_output();
-
-    let mut pin_gp_g = pins.gpio7.into_push_pull_output();
-    let mut pin_gp_dot = pins.gpio8.into_push_pull_output();
-
-    let mut pin1 = pins.gpio1.into_push_pull_output();
-    let mut pin2 = pins.gpio2.into_push_pull_output();
-    let mut pin3 = pins.gpio3.into_push_pull_output();
-    let mut pin4 = pins.gpio4.into_push_pull_output();
-    let mut pin5 = pins.gpio5.into_push_pull_output();
-    let mut pin6 = pins.gpio6.into_push_pull_output();
-
-
-
-    pin_gp_dot.set_high().unwrap();
-    pin_gp_g.set_high().unwrap();
+    segment1.demo_blink(5);
     loop {
-
-        pin1.set_low().unwrap();
-        delay.delay_ms(100);
-        pin1.set_high().unwrap();
-
-        pin2.set_low().unwrap();
-        delay.delay_ms(100);
-        pin2.set_high().unwrap();
-
-        pin3.set_low().unwrap();
-        delay.delay_ms(100);
-        pin3.set_high().unwrap();
-
-        pin4.set_low().unwrap();
-        delay.delay_ms(100);
-        pin4.set_high().unwrap();
-
-        pin5.set_low().unwrap();
-        delay.delay_ms(100);
-        pin5.set_high().unwrap();
-
-        pin6.set_low().unwrap();
-        delay.delay_ms(100);
-        pin6.set_high().unwrap();
+        for i in 0..=9 {
+            segment1.demo(5);
+            segment1.display(i);
+        }
     }
 }
-
 
 // End of file
