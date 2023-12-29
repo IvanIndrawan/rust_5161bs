@@ -80,7 +80,7 @@ unsafe fn main() -> ! {
         pins.gpio7.into_push_pull_output().into_dyn_pin(),
         pins.gpio8.into_push_pull_output().into_dyn_pin(),
     ];
-    let mut segment1 = Segment::new(x, delay);
+    let mut segment1 = Segment::new(x, &mut delay);
 
     segment1.demo_blink(5);
     loop {

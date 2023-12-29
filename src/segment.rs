@@ -9,13 +9,13 @@ pub trait Demo {
     fn demo_blink(&mut self, num: u8);
 }
 
-pub struct Segment {
+pub struct Segment<'d> {
     segment_pins: [Pin<DynPinId, FunctionSio<SioOutput>, PullDown>; 8],
-    delay: Delay,
+    delay: &'d mut Delay,
 }
 
-impl Segment {
-    pub fn new(segment_pins: [Pin<DynPinId, FunctionSio<SioOutput>, PullDown>; 8], delay: Delay) -> Self {
+impl <'d>Segment<'d> {
+    pub fn new(segment_pins: [Pin<DynPinId, FunctionSio<SioOutput>, PullDown>; 8], delay: &'d mut Delay) -> Self {
         Self { segment_pins, delay }
     }
 
@@ -32,7 +32,7 @@ impl Segment {
     }
 }
 
-impl Demo for Segment {
+impl <'d>Demo for Segment<'d> {
     fn demo_blink(&mut self, num: u8) {
         self.clear();
         for _ in 0..num {
